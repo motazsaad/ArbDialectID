@@ -335,12 +335,12 @@ def benchmark(clf,name):
 
 results = []
 for clf, name in (
-        (RidgeClassifier(tol=1e-2, solver="sag"), "Ridge Classifier"),
+        (RidgeClassifier(tol=1e-2, solver="sag"), "Ridge_Classifier"),
         (Perceptron(max_iter=50, tol=1e-3), "Perceptron"),
         (PassiveAggressiveClassifier(max_iter=50, tol=1e-3),
          "Passive-Aggressive"),
         (KNeighborsClassifier(n_neighbors=10), "kNN"),
-        (RandomForestClassifier(n_estimators=100), "Random forest")
+        (RandomForestClassifier(n_estimators=100), "Random_forest")
        ):
     print('=' * 80)
     print(name)# the name of the classfier
@@ -361,19 +361,19 @@ for penalty in ["l2", "l1"]:
 print('=' * 80)
 print("Elastic-Net penalty")
 results.append(benchmark(SGDClassifier(alpha=.0001, max_iter=50,
-                                       penalty="elasticnet"),'SDG_Elastic-Net penalty'))
+                                       penalty="elasticnet"),'SDG_Elastic-Net_penalty'))
 
 # Train NearestCentroid without threshold
 print('=' * 80)
 print("NearestCentroid (aka Rocchio classifier)")
-results.append(benchmark(NearestCentroid(),'NearestCentroid (aka Rocchio classifier)'))
+results.append(benchmark(NearestCentroid(),'NearestCentroid_aka_Rocchio_classifier'))
 
 # Train sparse Naive Bayes classifiers
 print('=' * 80)
 print("Naive Bayes")
-results.append(benchmark(MultinomialNB(alpha=.1),'Naive Bayes_MultinomialNB_alpha 0.1'))
-results.append(benchmark(BernoulliNB(alpha=.1),'Naive Bayes_BernoulliNB_alpha 0.1'))
-results.append(benchmark(ComplementNB(alpha=.01),'Naive Bayes_ComplementNB_alpha 0.01'))
+results.append(benchmark(MultinomialNB(alpha=.1),'Naive_Bayes_MultinomialNB_alpha_0.1'))
+results.append(benchmark(BernoulliNB(alpha=.1),'Naive_Bayes_BernoulliNB_alpha_0.1'))
+results.append(benchmark(ComplementNB(alpha=.01),'Naive_Bayes_ComplementNB_alpha_0.01'))
 
 print('=' * 80)
 print("LinearSVC with L1-based feature selection")
@@ -382,7 +382,7 @@ print("LinearSVC with L1-based feature selection")
 results.append(benchmark(Pipeline([
   ('feature_selection', SelectFromModel(LinearSVC(penalty="l1", dual=False,
                                                   tol=1e-3))),
-  ('classification', LinearSVC(penalty="l2"))]),'LinearSVC with L1-based feature selection'))
+  ('classification', LinearSVC(penalty="l2"))]),'LinearSVC_with_L1-based_feature_selection'))
 
 # make some plots
 
