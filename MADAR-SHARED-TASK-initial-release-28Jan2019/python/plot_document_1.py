@@ -355,7 +355,7 @@ for penalty in ["l2", "l1"]:
 
     # Train SGD model
     results.append(benchmark(SGDClassifier(alpha=.0001, max_iter=50,
-                                           penalty=penalty),'LinearSVC_'+penalty))
+                                           penalty=penalty),'SGDClassifier_'+penalty))
 
 # Train SGD with Elastic Net penalty
 print('=' * 80)
@@ -373,7 +373,7 @@ print('=' * 80)
 print("Naive Bayes")
 results.append(benchmark(MultinomialNB(alpha=.1),'Naive_Bayes_MultinomialNB_alpha_0.1'))
 results.append(benchmark(BernoulliNB(alpha=.1),'Naive_Bayes_BernoulliNB_alpha_0.1'))
-results.append(benchmark(ComplementNB(alpha=.01),'Naive_Bayes_ComplementNB_alpha_0.01'))
+results.append(benchmark(ComplementNB(alpha=.1),'Naive_Bayes_ComplementNB_alpha_0.1'))
 
 print('=' * 80)
 print("LinearSVC with L1-based feature selection")
