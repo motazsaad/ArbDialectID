@@ -143,18 +143,6 @@ if opts.test_folder:
 else:
     test_file = '../single_data_set/dialects'
 """
-1. padic
-
-/Users/xabuka/PycharmProjects/measuring_acceptability/corpora/parallel_corpus/Train_Padic/conversation
-/Users/xabuka/PycharmProjects/measuring_acceptability/corpora/parallel_corpus/test_Padic/conversation
-
-2. Nizar
-corpora/parallel_corpus/train_multidialect_arabic/dialects/conversations
-corpora/parallel_corpus/test_multidialect_arabic/test
-
-3. Shami
-corpora/Balanced_Shami/train/dialects
-corpora/Balanced_Shami/test
 
 4. Madar
 ../single_data_set/dialects
@@ -186,10 +174,7 @@ print()
 
 # split a training set and a test set
 y_train, y_test = data_train.target, data_test.target
-print('this is y_test')
-#print(len(set(data_test.target)))
-#for i in data_test.target:
-#    print(i, data_test.target_names[i])
+
 
 print("Extracting features from the training data using a sparse vectorizer")
 t0 = time()
@@ -410,3 +395,7 @@ for i, c in zip(indices, clf_names):
     plt.text(-.3, i, c)
 
 plt.show()
+
+for i, c, s in zip(indices, clf_names,score):
+    print(i,c,"%0.3f" % s)
+   # print("%0.3f" % scores)
