@@ -136,12 +136,12 @@ print(categories if categories else "all")
 if opts.train_folder:
     train_file = opts.train_folder
 else:
-    train_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect26/Training/pre_clean'
+    train_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect6/Training/post_clean'
     
 if opts.test_folder:
     test_file = opts.test_folder
 else:
-    test_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect26/Developing/pre_clean'
+    test_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect6/Developing/post_clean'
 """
 
 4. Madar
@@ -293,9 +293,9 @@ def benchmark(clf,name):
     clf_descr = str(clf).split('(')[0]
     
     # save files
-    gold_test_file =  open('result26/'+name+'_gold.txt','w+') 
-    pred_test_file = open('result26/'+name+'_pred.txt','w+')
-    sample_file = open('result26/'+name+'_test_set.txt','w+')
+    gold_test_file =  open('result6_post/'+name+'_gold.txt','w+') 
+    pred_test_file = open('result6_post/'+name+'_pred.txt','w+')
+    sample_file = open('result6_post/'+name+'_test_set.txt','w+')
     
     for target,pre,doc in zip(y_test,pred,X_test):
         gold_test_file.write(data_test.target_names[target]+ '\n')
