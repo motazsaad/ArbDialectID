@@ -126,7 +126,7 @@ if opts.filtered:
 else:
     remove = ()
 
-print("Loading 20 newsgroups dataset for categories:")
+print("Loading MADAR dataset for categories:")
 print(categories if categories else "all")
 
 #arb_stopwords = set(nltk.corpus.stopwords.words("arabic"))
@@ -136,12 +136,12 @@ print(categories if categories else "all")
 if opts.train_folder:
     train_file = opts.train_folder
 else:
-    train_file = '../single_data_set/dialects'
+    train_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect26/Training/pre_clean'
     
 if opts.test_folder:
     test_file = opts.test_folder
 else:
-    test_file = '../single_data_set/dialects'
+    test_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect26/Developing/pre_clean'
 """
 
 4. Madar
@@ -293,9 +293,9 @@ def benchmark(clf,name):
     clf_descr = str(clf).split('(')[0]
     
     # save files
-    gold_test_file =  open('result/'+name+'_gold.txt','w+') 
-    pred_test_file = open('result/'+name+'_pred.txt','w+')
-    sample_file = open('result/'+name+'_test_set.txt','w+')
+    gold_test_file =  open('result26/'+name+'_gold.txt','w+') 
+    pred_test_file = open('result26/'+name+'_pred.txt','w+')
+    sample_file = open('result26/'+name+'_test_set.txt','w+')
     
     for target,pre,doc in zip(y_test,pred,X_test):
         gold_test_file.write(data_test.target_names[target]+ '\n')
