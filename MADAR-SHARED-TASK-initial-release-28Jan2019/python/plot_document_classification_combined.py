@@ -38,7 +38,7 @@ from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.feature_selection import SelectFromModel
 from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.linear_model import RidgeClassifier
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.svm import LinearSVC
 from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import Perceptron
@@ -49,6 +49,11 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
+from scipy.sparse import hstack
+from sklearn_pandas import DataFrameMapper, cross_val_score
+
+
+
 
 
 # Display progress logs on stdout
@@ -84,12 +89,6 @@ op.add_option("--filtered",
               action="store_true",
               help="Remove newsgroup information that is easily overfit: "
                    "headers, signatures, and quoting.")
-op.add_option("--train_folder",
-              action="store", type = "str",
-              help="Enter the Train directory.")
-op.add_option("--test_folder",
-              action="store", type= "str",
-              help="Enter the test directory.")
 
 
 def is_interactive():
@@ -126,38 +125,56 @@ if opts.filtered:
 else:
     remove = ()
 
-print("Loading MADAR dataset for categories:")
-print(categories if categories else "all")
+#print(categories if categories else "all")
 
 #arb_stopwords = set(nltk.corpus.stopwords.words("arabic"))
 #print(list(arb_stopwords))
 #stop_words = frozenset(arb_stopwords)
 
-if opts.train_folder:
-    train_file = opts.train_folder
-else:
-    train_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect6/Training/post_clean'
+
+"""
+1. padic
+
+corpora/parallel_corpus/Train_Padic/conversation
+corpora/parallel_corpus/test_Padic/conversation
+
+2. Nizar
+corpora/parallel_corpus/train_multidialect_arabic/dialects/conversations
+corpora/parallel_corpus/test_multidialect_arabic/test
+
+3. Shami
+corpora/Balanced_Shami/train/dialects
+corpora/Balanced_Shami/test
+
+4. Shami_without_names:
+corpora/Shami_without_names/train/dialects   
+corpora/Shami_without_names/test
+
+Shami_withX_names
+
+unbalanced
+corpora/Shami/Train_Filter_Corpus/train
+corpora/Shami/Test_Filter_Corpus/development
+"""
+train_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect6/Training/post_clean'
     
-if opts.test_folder:
-    test_file = opts.test_folder
-else:
-    test_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect6/Developing/post_clean'
-"""
+test_file = '../../MADAR-SHARED-TASK-third-release-8Mar2019/MADAR-Shared-Task-Subtask-1/Dialect6/Developing/post_clean'
 
-4. Madar
-../single_data_set/dialects
+print("Loading MADAR dataset for categories:")
 
-"""
 data_train = load_files(train_file, encoding = 'utf-8',decode_error='ignore')
 
 data_test = load_files(test_file, encoding = 'utf-8',decode_error='ignore')
 
+print(data_train.target_names)
+
+#fetch_20newsgroups(subset='test', categories=categories, shuffle=True, random_state=42,remove=remove)
 print('data loaded')
-#print(data_test.data)
+
 # order of labels in `target_names` can be different from `categories`
 target_names = data_train.target_names
 
-#print(len(data_test.data))
+
 def size_mb(docs):
     return sum(len(s.encode('utf-8')) for s in docs) / 1e6
 
@@ -174,37 +191,60 @@ print()
 
 # split a training set and a test set
 y_train, y_test = data_train.target, data_test.target
-
-
+l_acc = []
 print("Extracting features from the training data using a sparse vectorizer")
 t0 = time()
 #opts.use_hashing = True
-if opts.use_hashing:
-    vectorizer = HashingVectorizer(stop_words='english', alternate_sign=False,
-                                   n_features=opts.n_features)
-    X_train = vectorizer.transform(data_train.data)
-else:
-    vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
-                                 stop_words='english')
-    X_train = vectorizer.fit_transform(data_train.data)
+union = FeatureUnion([("w_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(1,2)
+                                 )),
+                       ("c_wb", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(2,5)
+                                 )),
+#                       ("c_wb5", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(5,5)
+#                                 )),
+#                       ("c_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(5,5)
+#                                 ))
+                       ],
+transformer_weights={
+            'w_v': 0.5,
+            'c_wb': 0.8,
+#            'body_stats': 1.0,
+        },)
+                       
+
+#union.fit_transform(data_train.data)
+X_train = union.fit_transform(data_train.data) #union.fit_transform(data_train.data)
+#Y_train = union.transform
+X_test = union.transform(data_test.data)#union.transform(data_test.data
+
+
+
+
+
+
+
 duration = time() - t0
-print("done in %fs at %0.3fMB/s" % (duration, data_train_size_mb / duration))
+#print("done in %fs at %0.3fMB/s" % (duration, data_train_size_mb / duration))
 print("n_samples: %d, n_features: %d" % X_train.shape)
 print()
 
 print("Extracting features from the test data using the same vectorizer")
 t0 = time()
-X_test = vectorizer.transform(data_test.data)
+#X_test = vectorizer.transform(data_test.data)
+#X_test = hstack([char_Xtest, word_X_test])
+#X_test = X_train.transform(data_test.data)
+#X_test = mapper.fit_transform(data_test.data)
+
 duration = time() - t0
-print("done in %fs at %0.3fMB/s" % (duration, data_test_size_mb / duration))
+#print("done in %fs at %0.3fMB/s" % (duration, data_test_size_mb / duration))
 print("n_samples: %d, n_features: %d" % X_test.shape)
 print()
 
 # mapping from integer feature name to original token string
+opts.use_hashing = True
 if opts.use_hashing:
     feature_names = None
 else:
-    feature_names = vectorizer.get_feature_names()
+    feature_names = union.get_feature_names()
 
 if opts.select_chi2:
     print("Extracting %d best features by a chi-squared test" %
@@ -229,22 +269,9 @@ def trim(s):
     return s if len(s) <= 80 else s[:77] + "..."
 
 
-def save_result_file(target_test,pred_test,name,X_samples):
-    gold_test_file =  open(name+'_gold.txt','w+') 
-    pred_test_file = open(name+'_pred.txt','w+')
-    sample_file = open(name+'_test_set.txt','w+')
-    
-    for target,pred,sent in zip(target_test,pred_test,name,X_samples):
-        gold_test_file.write(data_test.target_names[target])
-        pred_test_file.write(data_test.target_names[pred])
-        sample_file.write(vectorizer.inverse_transform(sent))
-    
-    
-    
-    
 # #############################################################################
 # Benchmark classifiers
-def benchmark(clf,name):
+def benchmark(clf):
     print('_' * 80)
     print("Training: ")
     print(clf)
@@ -255,17 +282,14 @@ def benchmark(clf,name):
 
     t0 = time()
     pred = clf.predict(X_test)
-#    for doc,category in zip(X_test, pred):
-#        print('%d => %s' % (category, data_test.target_names[category]))
-#        print(' '.join(vectorizer.inverse_transform(doc)[0]))
     test_time = time() - t0
     print("test time:  %0.3fs" % test_time)
-    #print(pred)
-    #print(vectorizer.inverse_transform(X_test))
 
     score = metrics.accuracy_score(y_test, pred)
     print("accuracy:   %0.3f" % score)
-
+    l_acc.append(score)
+#    print(metrics.classification_report(data_test.target, pred,
+#     target_names=data_test.target_names)) 
     #opts.print_top10 = True
     if hasattr(clf, 'coef_'):
         print("dimensionality: %d" % clf.coef_.shape[1])
@@ -292,84 +316,78 @@ def benchmark(clf,name):
     print()
     clf_descr = str(clf).split('(')[0]
     
+    
     # save files
-    gold_test_file =  open('result6_post/'+name+'_gold.txt','w+') 
-    pred_test_file = open('result6_post/'+name+'_pred.txt','w+')
-    sample_file = open('result6_post/'+name+'_test_set.txt','w+')
-    
-    for target,pre,doc in zip(y_test,pred,X_test):
-        gold_test_file.write(data_test.target_names[target]+ '\n')
-        pred_test_file.write(data_test.target_names[pre]+ '\n')
-        sample_file.write(data_test.target_names[target]+'\t'+' '.join(vectorizer.inverse_transform(doc)[0])+'\n')
-    
-    
-    
-    
-#    print('the test_part')
+#    gold_test_file =  open('result6_combined_post/'+name+'_gold.txt','w+') 
+#    pred_test_file = open('result6_combined_post/'+name+'_pred.txt','w+')
+#    #sample_file = open('result6_combined_post/'+name+'_test_set.txt','w+')
 #    
-#    docs_new = ['انا مش عارف شو الموقف حاليا ', 'كل صالونات لبنان تتحدث عن رائحه فساد ', 'بعرفش هيا هيك شو اعملك ']
-#    x_doc = vectorizer.transform(docs_new)    
-#    predicted = clf.predict(x_doc)
-#    for doc,category in zip(docs_new, predicted):
-#        print('%r =>%d => %s' % (doc,category, data_test.target_names[category]))
-        
-    return clf_descr, score, train_time, test_time
+#    for target,pre,doc in zip(y_test,pred,X_test):
+#        gold_test_file.write(data_test.target_names[target]+ '\n')
+#        pred_test_file.write(data_test.target_names[pre]+ '\n')
+#       # sample_file.write(data_test.target_names[target]+'\t'+' '.join(vectorizer.inverse_transform(doc)[0])+'\n')
+#    
     
-
+    
+    
+    return clf_descr, score, train_time, test_time
 
 
 results = []
 for clf, name in (
-        (RidgeClassifier(tol=1e-2, solver="sag"), "Ridge_Classifier"),
+        (RidgeClassifier(tol=1e-2, solver="sag"), "Ridge Classifier"),
         (Perceptron(max_iter=50, tol=1e-3), "Perceptron"),
         (PassiveAggressiveClassifier(max_iter=50, tol=1e-3),
          "Passive-Aggressive"),
-        (KNeighborsClassifier(n_neighbors=10), "kNN"),
-        (RandomForestClassifier(n_estimators=100), "Random_forest")
-       ):
+        #(KNeighborsClassifier(n_neighbors=10), "kNN"),
+        #(RandomForestClassifier(n_estimators=100), "Random forest")
+        ):
     print('=' * 80)
-    print(name)# the name of the classfier
-    results.append(benchmark(clf,name))
+    print(name)
+    results.append(benchmark(clf))
 
 for penalty in ["l2", "l1"]:
     print('=' * 80)
     print("%s penalty" % penalty.upper())
     # Train Liblinear model
     results.append(benchmark(LinearSVC(penalty=penalty, dual=False,
-                                       tol=1e-3),'LinearSVC_'+penalty))
+                                       tol=1e-3)))
 
     # Train SGD model
-#    results.append(benchmark(SGDClassifier(alpha=.0001, max_iter=50,
-#                                           penalty=penalty),'SGDClassifier_'+penalty))
-
     print("SGD 0.001")
     results.append(benchmark(SGDClassifier(alpha=.001, max_iter=50,
-                                           penalty=penalty),'SGDClassifier_0.001_'+penalty))
+                                           penalty=penalty)))
     print("SGD 0.0001")
     results.append(benchmark(SGDClassifier(alpha=.0001, max_iter=50,
-                                           penalty=penalty),'SGDClassifier_0.0001_'+penalty))
+                                           penalty=penalty)))
     print("SGD 0.00001")
     results.append(benchmark(SGDClassifier(alpha=.00001, max_iter=50,
-                                           penalty=penalty),'SGDClassifier_0.00001_'+penalty))
-
+                                           penalty=penalty)))
+    
 
 # Train SGD with Elastic Net penalty
 print('=' * 80)
 print("Elastic-Net penalty")
 results.append(benchmark(SGDClassifier(alpha=.0001, max_iter=50,
-                                       penalty="elasticnet"),'SDG_Elastic-Net_penalty'))
+                                       penalty="elasticnet")))
 
 # Train NearestCentroid without threshold
 print('=' * 80)
 print("NearestCentroid (aka Rocchio classifier)")
-results.append(benchmark(NearestCentroid(),'NearestCentroid_aka_Rocchio_classifier'))
+results.append(benchmark(NearestCentroid()))
 
 # Train sparse Naive Bayes classifiers
 print('=' * 80)
-print("Naive Bayes")
-results.append(benchmark(MultinomialNB(alpha=.1),'Naive_Bayes_MultinomialNB_alpha_0.1'))
-results.append(benchmark(BernoulliNB(alpha=.1),'Naive_Bayes_BernoulliNB_alpha_0.1'))
-results.append(benchmark(ComplementNB(alpha=.1),'Naive_Bayes_ComplementNB_alpha_0.1'))
+print("Naive Bayes alpha = 0.01")
+results.append(benchmark(MultinomialNB(alpha=.01)))
+results.append(benchmark(BernoulliNB(alpha=.01)))
+results.append(benchmark(ComplementNB(alpha=.01)))
+
+print('=' * 80)
+print("Naive Bayes  alpha = 0.1")
+results.append(benchmark(MultinomialNB(alpha=.1)))
+results.append(benchmark(BernoulliNB(alpha=.1)))
+results.append(benchmark(ComplementNB(alpha=.1)))
 
 print('=' * 80)
 print("LinearSVC with L1-based feature selection")
@@ -378,7 +396,7 @@ print("LinearSVC with L1-based feature selection")
 results.append(benchmark(Pipeline([
   ('feature_selection', SelectFromModel(LinearSVC(penalty="l1", dual=False,
                                                   tol=1e-3))),
-  ('classification', LinearSVC(penalty="l2"))]),'LinearSVC_with_L1-based_feature_selection'))
+  ('classification', LinearSVC(penalty="l2"))])))
 
 # make some plots
 
@@ -402,11 +420,14 @@ plt.subplots_adjust(left=.25)
 plt.subplots_adjust(top=.95)
 plt.subplots_adjust(bottom=.05)
 
-for i, c in zip(indices, clf_names):
-    plt.text(-.3, i, c)
+#for i, c in zip(indices, clf_names):
+#    plt.text(-.3, i, c)
 
-plt.show()
 
+#for score in l_acc:
+#    print("%0.3f" % score)
+    
 for i, c, s in zip(indices, clf_names,score):
+    plt.text(-.3, i, c)
     print(i,c,"%0.3f" % s)
-   # print("%0.3f" % scores)
+plt.show()
