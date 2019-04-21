@@ -156,9 +156,9 @@ unbalanced
 corpora/Shami/Train_Filter_Corpus/train
 corpora/Shami/Test_Filter_Corpus/development
 """
-train_file = '../S1/Dialect26/Multi_data/train/post_clean'
+train_file = '../data/Dialect26/Multi_data/train/post_clean'
     
-test_file = '../S1/Dialect26/Multi_data/dev/post_clean'
+test_file = '../data/Dialect26/Multi_data/dev/post_clean'
 #train_file = '../S1/Dialects26/train/post_clean2'
 #    
 #test_file = '../S1/Dialects26/dev/post_clean2'

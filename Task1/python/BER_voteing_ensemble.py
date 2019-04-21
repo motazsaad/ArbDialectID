@@ -27,8 +27,8 @@ from sklearn import model_selection
 #
 #train_file = '../S1/D6_26/8dialects/train'  
 #test_file = '../S1/D6_26/8dialects/dev'
-train_file = '../data/D6_26/8dialects/train'  
-test_file = '../data/D6_26/8dialects/dev'
+train_file = '../data/D6_26/6dialects/splited_train/BEI'  
+test_file = '../data/D6_26/6dialects/splited_dev/BEI'
 
 print("Loading MADAR dataset for categories:")
 
@@ -52,17 +52,6 @@ print("Traing Data:   {0}".format(len(data_train.data)))
 print("Testing Data:   {0}".format(len(data_test.data)))
 
 
-##word_vect = TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(1,1))
-#char_vect  = TfidfVectorizer(max_features = 50000, sublinear_tf=True,norm ='l1', max_df=0.75,analyzer = 'char_wb', ngram_range=(2,5))
-#
-#
-#union = FeatureUnion([("w_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(1,2)
-#                                 )),
-#                       ("c_wb", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(2,5)
-#                                 )),
-##                       ("c_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char', ngram_range=(2,5)
-##                                 ))
-#                       ])
 def basic_tokenize(tweet):
     return tweet.split(' ')
 
@@ -100,26 +89,19 @@ print("Extracting features from the training data using a sparse vectorizer")
 #t0 = time()
 #opts.use_hashing = True
 #6
-union = FeatureUnion([("w_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(1,4)
-                                 )),
-#        ("w_v2", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(2,3)
-#                                 )),
-                       ("c_wb", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(2,5)
-                                 )),
-#                       ("c_wb5", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char', ngram_range=(2,4)
-#                                 )),
-#                       ("c_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char', ngram_range=(5,5)
-#                                 ))
-      ("sk",TfidfVectorizer(sublinear_tf=True, max_df=0.5,tokenizer=make_skip_tokenize(n=2, k=2)))
-
-                       ],
-transformer_weights={
-            'w_v': 0.7,
-            'c_wb': 0.5,
+union = FeatureUnion([
+                    ("w_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(1,3))),
+                    ("c_wb", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(2,5))),
+                    ("c_wb5", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char', ngram_range=(2,5) )),
+                    ("sk",TfidfVectorizer(sublinear_tf=True, max_df=0.5,tokenizer=make_skip_tokenize(n=2, k=2)))
+                      ],
+#transformer_weights={
+#            'w_v': 0.8,
+#            'c_wb': 0.9,
 #           ' c_wb5':0.5,
-            'sk': 0.4,
-        }
-,
+#            'sk': 0.4,
+#        }
+#,
 )
 #union.fit_transform(data_train.data)
 X_train = union.fit_transform(data_train.data) #union.fit_transform(data_train.data)
@@ -134,6 +116,7 @@ print("Combined space has", X_train.shape[1], "features")
 estimators = []
 #sgd = SGDClassifier(alpha=0.00001, max_iter=50,penalty="l2") 
 #estimators.append(('sgd', sgd))
+
 svc = LinearSVC(penalty='l2', dual=False,tol=1e-3)
 estimators.append(('svc',svc))
 mnb= MultinomialNB(alpha=.01)

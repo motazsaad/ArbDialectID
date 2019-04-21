@@ -24,9 +24,14 @@ from sklearn import model_selection
 
 
 
-train_file = '../S1/Dialect26/Multi_data/train/post_clean'
+#train_file = '../data/combined/train/pre_clean'
+train_file = '../data/Dialect26/Multi_data/train/pre_clean'
     
-test_file = '../S1/Dialect26/Multi_data/dev/post_clean'
+test_file = '../data/Dialect26/Multi_data/dev/pre_clean'
+#train_file = '../data/clean26_punc/train/post_clean'
+#    
+#test_file = '../data/clean26_punc/dev/post_clean'
+
 
 print("Loading MADAR dataset for categories:")
 
@@ -87,24 +92,26 @@ print("Extracting features from the training data using a sparse vectorizer")
 #t0 = time()
 #opts.use_hashing = True
 #6
-union = FeatureUnion([("w_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(1,4)
+max_df = 0.5
+#min_df = 1
+union = FeatureUnion([("w_v", TfidfVectorizer(sublinear_tf=True, max_df=max_df,analyzer = 'word', ngram_range=(1,3)
                                  )),
 #        ("w_v2", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(2,3)
 #                                 )),
-                       ("c_wb", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(2,5)
+                       ("c_wb", TfidfVectorizer(sublinear_tf=True,max_df=max_df,analyzer = 'char_wb', ngram_range=(2,5)
                                  )),
-                       ("c_wb5", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char', ngram_range=(2,4)
+                       ("c_wb5", TfidfVectorizer(sublinear_tf=True, max_df=max_df,analyzer = 'char', ngram_range=(2,4)
                                  )),
 #                       ("c_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(5,5)
 #                                 ))
-      ("sk",TfidfVectorizer(sublinear_tf=True, max_df=0.5,tokenizer=make_skip_tokenize(n=2, k=1)))
+      ("sk",TfidfVectorizer(sublinear_tf=True, max_df=max_df,tokenizer=make_skip_tokenize(n=2, k=1)))
 
                        ],
 transformer_weights={
             'w_v': 0.5,
             'c_wb': 0.5,
            ' c_wb5':0.5,
-            'sk': 0.4,
+            'sk': 0.3,
         }
 ,
 )
@@ -148,5 +155,23 @@ print("accuracy:   %0.3f" % score)
 print("classification report:")
 print(metrics.classification_report(y_test, pred,target_names=target_names))
 
-print("confusion matrix:")
-print(metrics.confusion_matrix(y_test, pred))
+#print("confusion matrix:")
+#print(metrics.confusion_matrix(y_test, pred))
+
+
+#
+#   #save files
+#gold_test_file =  open('result26/gold_2.txt','w+') 
+#pred_test_file = open('result26/pred_2.txt','w+')
+#    #sample_file = open('result6_combined_post/'+name+'_test_set.txt','w+')
+#    
+#for target,pre,doc in zip(y_test,pred,X_test):
+#    gold_test_file.write(data_test.target_names[target]+ '\n')
+#    pred_test_file.write(data_test.target_names[pre]+ '\n')
+       # sample_file.write(data_test.target_names[target]+'\t'+' '.join(vectorizer.inverse_transform(doc)[0])+'\n')
+    
+    
+    
+    
+
+

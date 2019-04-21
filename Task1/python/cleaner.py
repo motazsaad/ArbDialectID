@@ -118,22 +118,23 @@ def clean(corpus_file):
         
     
         #print("removing punctuations and digits")
-        clean_text = remove_punctuation(line)
-        norm_text  = normalize_arabic(clean_text)
+        clean_text = remove_punctuations(remove_punctuation(line))
+        #norm_text  = normalize_arabic(clean_text)
         #clean_text = remove_diacritics(clean_text)
-        alphapet_text = remove_digits(norm_text)
+        alphapet_text = remove_digits(clean_text)
         #del corpus
-        del clean_text
-        del norm_text
+        #del clean_text
+        #del norm_text
     
         #print("remove non Arabic")
         pure_arabic_text = keep_only_arabic(alphapet_text.split())
-        del alphapet_text
+        #del alphapet_text
 
         final_update_text = del_char.delete_repeat_char(pure_arabic_text)
 
         final_without_emoji = strip_emoji(final_update_text)
-        new_corpus.append(final_without_emoji)
+        new_corpus.append(pure_arabic_text)
+        #new_corpus.append(final_without_emoji)
     
     #print(new_corpus)
     #return ' '.join(words), new_corpus
@@ -158,6 +159,7 @@ if __name__ == '__main__':
         #print(clean(corpus))
         print_to_file(clean(corpus),folder_name+'/clean_'+sys.argv[2])
     else:
+        print_to_file(clean('1.txt'),'11.txt')
         print(usage())
         sys.exit(-1)
 
