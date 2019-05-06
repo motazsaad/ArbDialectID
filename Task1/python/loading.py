@@ -31,7 +31,7 @@ def load_train(imdb_dir,maxlen,training_samples, validation_samples,max_words, V
     labels = []
     texts = []
     #i = 0
-    target_class = ['ALE', 'AMM', 'BEI', 'DAM', 'JER', 'SAL']
+    target_class = ['MSA', 'BEI', 'DOH', 'RAB', 'CAI', 'TUN']
     #if not binary:
      #   target_class.append('NO') 
     
@@ -46,17 +46,17 @@ def load_train(imdb_dir,maxlen,training_samples, validation_samples,max_words, V
                 
                 texts.append(f.read())# add the sentences to text array
                 f.close()
-                if label_type in ['ALE']:# which value to assign to every class
+                if label_type in ['MSA']:# which value to assign to every class
                     labels.append(0)
-                elif label_type in ['AMM']:# which value to assign to every class
-                    labels.append(1)
                 elif label_type in ['BEI']:# which value to assign to every class
+                    labels.append(1)
+                elif label_type in ['DOH']:# which value to assign to every class
                     labels.append(2)
-                elif label_type in ['DAM']:# which value to assign to every class
+                elif label_type in ['RAB']:# which value to assign to every class
                     labels.append(3)
-                elif label_type in ['JER']:# which value to assign to every class
+                elif label_type in ['CAI']:# which value to assign to every class
                     labels.append(4)
-                elif label_type in ['SAL']:# which value to assign to every class
+                elif label_type in ['TUN']:# which value to assign to every class
                     labels.append(5)
                 
             
@@ -118,15 +118,16 @@ def load_train(imdb_dir,maxlen,training_samples, validation_samples,max_words, V
 
 def load_test(imdb_dir,maxlen,max_words,binary= False):
     
-    test_dir = os.path.join(imdb_dir, 'test')
+    test_dir = os.path.join(imdb_dir, 'dev')
     labels = []
     texts = []
-    target_class = ['ALE', 'AMM', 'BEI', 'DAM', 'JER', 'SAL']
+    target_class = ['MSA', 'BEI', 'DOH', 'RAB', 'CAI', 'TUN']
     #if not binary:
      #   target_class.append('NO') 
     
     for label_type in target_class:#categories
 #    for label_type in ['pos','neg']: # for mdb
+
         dir_name = os.path.join(test_dir, label_type)
         for fname in os.listdir(dir_name):
             if fname[-4:] != 'tore':
@@ -135,17 +136,17 @@ def load_test(imdb_dir,maxlen,max_words,binary= False):
                 #print(fname) 
                 texts.append(f.read())# add the sentences to text array
                 f.close()
-                if label_type in ['ALE']:# which value to assign to every class
+                if label_type in ['MSA']:# which value to assign to every class
                     labels.append(0)
-                elif label_type in ['AMM']:# which value to assign to every class
-                    labels.append(1)
                 elif label_type in ['BEI']:# which value to assign to every class
+                    labels.append(1)
+                elif label_type in ['DOH']:# which value to assign to every class
                     labels.append(2)
-                elif label_type in ['DAM']:# which value to assign to every class
+                elif label_type in ['RAB']:# which value to assign to every class
                     labels.append(3)
-                elif label_type in ['JER']:# which value to assign to every class
+                elif label_type in ['CAI']:# which value to assign to every class
                     labels.append(4)
-                elif label_type in ['SAL']:# which value to assign to every class
+                elif label_type in ['TUN']:# which value to assign to every class
                     labels.append(5)
              
     tokenizer = Tokenizer(num_words=max_words)
@@ -172,9 +173,10 @@ def word_index(imdb_dir,maxlen,max_words):
     train_dir = os.path.join(imdb_dir, 'train')
     labels = []
     texts = []
-    #i = 0
-    for label_type in ['ALE', 'AMM', 'BEI', 'DAM', 'JER', 'SAL']:#categories
+    target_class = ['MSA', 'BEI', 'DOH', 'RAB', 'CAI', 'TUN']
 #    for label_type in ['pos','neg']: # for mdb
+    for label_type in target_class:#categories
+
         dir_name = os.path.join(train_dir, label_type)
         for fname in os.listdir(dir_name):
             if fname[-4:] != 'tore':
@@ -183,17 +185,17 @@ def word_index(imdb_dir,maxlen,max_words):
                 #print(fname) 
                 texts.append(f.read())# add the sentences to text array
                 f.close()
-                if label_type in ['ALE']:# which value to assign to every class
+                if label_type in ['MSA']:# which value to assign to every class
                     labels.append(0)
-                elif label_type in ['AMM']:# which value to assign to every class
-                    labels.append(1)
                 elif label_type in ['BEI']:# which value to assign to every class
+                    labels.append(1)
+                elif label_type in ['DOH']:# which value to assign to every class
                     labels.append(2)
-                elif label_type in ['DAM']:# which value to assign to every class
+                elif label_type in ['RAB']:# which value to assign to every class
                     labels.append(3)
-                elif label_type in ['JER']:# which value to assign to every class
+                elif label_type in ['CAI']:# which value to assign to every class
                     labels.append(4)
-                elif label_type in ['SAL']:# which value to assign to every class
+                elif label_type in ['TUN']:# which value to assign to every class
                     labels.append(5)
             
     

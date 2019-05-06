@@ -78,12 +78,12 @@ def make_skip_tokenize(n, k, include_all=True):
 #data_train_size_mb = size_mb(data_train.data)
 #data_test_size_mb = size_mb(data_test.data)
 
-print("%d documents - %0.3fMB (training set)" % (
-    len(data_train.data), data_train_size_mb))
-print("%d documents - %0.3fMB (test set)" % (
-    len(data_test.data), data_test_size_mb))
-print("%d categories" % len(target_names))
-print()
+#print("%d documents - %0.3fMB (training set)" % (
+#    len(data_train.data), data_train_size_mb))
+#print("%d documents - %0.3fMB (test set)" % (
+#    len(data_test.data), data_test_size_mb))
+#print("%d categories" % len(target_names))
+#print()
 
 # split a training set and a test set
 y_train, y_test = data_train.target, data_test.target

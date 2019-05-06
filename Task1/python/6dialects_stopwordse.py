@@ -25,17 +25,18 @@ from sklearn import model_selection
 #92.6 with post and pre clean
 
 
+
 #
 #train_file = '../S1/D6_26/train'
 #    
 #test_file = '../S1/D6_26/dev'
-#train_file = '../data/Dialect6/Multi_data/train/pre_clean'
-#    
-#test_file = '../data/Dialect6/Multi_data/dev/pre_clean'
-
-train_file = '../data/Dialect6/Multistopwords/train'
+train_file = '../data/Dialect6/Multi_data/train/pre_clean'
     
-test_file = '../data/Dialect6/Multistopwords/dev'
+test_file = '../data/Dialect6/Multi_data/dev/pre_clean'
+#
+#train_file = '../data/Dialect6/Multistopwords/train'
+#    
+#test_file = '../data/Dialect6/Multistopwords/dev'
 
 data_train = load_files(train_file, encoding = 'utf-8',decode_error='ignore')
 
@@ -91,12 +92,12 @@ def make_skip_tokenize(n, k, include_all=True):
 #data_train_size_mb = size_mb(data_train.data)
 #data_test_size_mb = size_mb(data_test.data)
 
-print("%d documents - %0.3fMB (training set)" % (
-    len(data_train.data), data_train_size_mb))
-print("%d documents - %0.3fMB (test set)" % (
-    len(data_test.data), data_test_size_mb))
-print("%d categories" % len(target_names))
-print()
+#print("%d documents - %0.3fMB (training set)" % (
+#    len(data_train.data), data_train_size_mb))
+#print("%d documents - %0.3fMB (test set)" % (
+#    len(data_test.data), data_test_size_mb))
+#print("%d categories" % len(target_names))
+#print()
 
 # split a training set and a test set
 y_train, y_test = data_train.target, data_test.target
@@ -105,12 +106,50 @@ print("Extracting features from the training data using a sparse vectorizer")
 #t0 = time()
 #opts.use_hashing = True
 #6
-union = FeatureUnion([("w_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(1,4)
-                                 )),
-#        ("w_v2", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(2,3)
+#union = FeatureUnion([
+#        ("w_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(1,3)
 #                                 )),
-                       ("c_wb", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(2,5)
+##        ("w_v2", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(2,3)
+##                                 )),
+#                       ("c_wb", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(2,6)
+#                                 )),
+##                       ("c_wb5", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char', ngram_range=(2,4)
+##                                 )),
+##                       ("c_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char', ngram_range=(5,5)
+##                                 ))
+#      ("sk",TfidfVectorizer(sublinear_tf=True, max_df=0.5,tokenizer=make_skip_tokenize(n=2, k=2)))
+#
+#                       ],
+#transformer_weights={
+#            'w_v': 0.7,
+#            'c_wb': 0.5,
+#           #' c_wb5':0.5,
+#            'sk': 0.4,
+#        }
+#,
+#)
+
+union = FeatureUnion([
+        ("w_v1", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(1,1)
                                  )),
+        ("w_v2", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(2,2)
+                                 )),
+        ("w_v3", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(3,3)
+                                 )),
+        ("w_v4", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(4,4)
+                                 )),
+        ("w_v5", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'word', ngram_range=(5,5)
+                                 )),
+                       ("c_wb1", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(2,2)
+                                 )),
+                        ("c_wb2", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(3,3)
+                                 )),
+                         ("c_wb3", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(4,4)
+                                 )),
+                          ("c_wb4", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(5,5)
+                                 )),
+#                           ("c_wb5", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char_wb', ngram_range=(6,6)
+#                                 )),
 #                       ("c_wb5", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char', ngram_range=(2,4)
 #                                 )),
 #                       ("c_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,analyzer = 'char', ngram_range=(5,5)
@@ -119,13 +158,25 @@ union = FeatureUnion([("w_v", TfidfVectorizer(sublinear_tf=True, max_df=0.5,anal
 
                        ],
 transformer_weights={
-            'w_v': 0.7,
-            'c_wb': 0.5,
-#           ' c_wb5':0.5,
+            'w_v1': 0.7,
+            'w_v2': 0.7,
+            'w_v3': 0.7,
+            'w_v4': 0.7,
+            'w_v5': 0.7,
+            'c_wb2': 0.6,
+            'c_wb3': 0.6,
+            'c_wb4': 0.6,
+#            'c_wb5': 0.5,
+            'c_wb1': 0.6,
+           #' c_wb5':0.5,
             'sk': 0.4,
         }
 ,
 )
+
+
+
+
 #union.fit_transform(data_train.data)
 X_train = union.fit_transform(data_train.data) #union.fit_transform(data_train.data)
 #Y_train = union.transform
