@@ -118,7 +118,7 @@ def clean(corpus_file):
         
     
         #print("removing punctuations and digits")
-        clean_text = remove_punctuations(remove_punctuation(line))
+        clean_text = remove_punctuations(remove_punctuations(line))
         #norm_text  = normalize_arabic(clean_text)
         #clean_text = remove_diacritics(clean_text)
         alphapet_text = remove_digits(clean_text)

@@ -161,14 +161,14 @@ print(metrics.classification_report(y_test, pred,target_names=target_names))
 
 #
 #   #save files
-#gold_test_file =  open('result26/gold_2.txt','w+') 
-#pred_test_file = open('result26/pred_2.txt','w+')
-#    #sample_file = open('result6_combined_post/'+name+'_test_set.txt','w+')
+gold_test_file =  open('result26/Final_dev_gold_1.txt','w+') 
+pred_test_file = open('result26/Final_dev_pred_1.txt','w+')
+sample_file = open('result26/Final_dev_set_1.txt','w+')
 #    
-#for target,pre,doc in zip(y_test,pred,X_test):
-#    gold_test_file.write(data_test.target_names[target]+ '\n')
-#    pred_test_file.write(data_test.target_names[pre]+ '\n')
-       # sample_file.write(data_test.target_names[target]+'\t'+' '.join(vectorizer.inverse_transform(doc)[0])+'\n')
+for target,pre,doc in zip(y_test,pred,data_test.data):
+    gold_test_file.write(data_test.target_names[target]+ '\n')
+    pred_test_file.write(data_test.target_names[pre]+ '\n')
+    sample_file.write(data_test.target_names[target]+'\t'+' '+doc+'\n')
     
     
     
